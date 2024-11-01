@@ -9,7 +9,7 @@
 - Starts: November 06, 2024 Noon UTC
 - Ends: November 13, 2024 Noon UTC
 
-- nSLOC: 946
+- nSLOC: 541
 
 [//]: # (contest-details-open)
 
@@ -101,19 +101,22 @@ Compatibilities:
 ## Setup
 
 1. Clone the repository:
-   ```sh
-   git clone https://github.com/your-repo/membership-dao-contracts.git
-​
+    ```sh
+    git clone https://github.com/your-repo/membership-dao-contracts.git
+    ```
+
 2. Install dependencies
     ```sh
     npm install
+    ```
+
 3. Test
     ```sh
     npx hardhat test
+    ```
 
 
 [//]: # (getting-started-close)
-
 [//]: # (known-issues-open)
 
 ## Known Issues
