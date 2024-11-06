@@ -87,6 +87,7 @@ contract NativeMetaTransaction is EIP712Base {
         nonce = nonces[user];
     }
 
+// audit-info ecrrecover will return address(0) if it fails. we can submit the signer as address(0) too. 
     function verify(
         address signer,
         MetaTransaction memory metaTx,
