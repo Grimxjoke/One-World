@@ -102,7 +102,7 @@ Compatibilities:
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/your-repo/membership-dao-contracts.git
+    git clone https://github.com/Cyfrin/2024-11-one-world.git
     ```
 
 2. Install dependencies
