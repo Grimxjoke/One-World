@@ -11,12 +11,12 @@ enum DAOType {
 
 
 struct DAOConfig {
-    string ensname;
+    string ensname; //must return address 0 since it is new
     DAOType daoType;
-    TierConfig[] tiers;
-    address currency;
+    TierConfig[] tiers; // must equeal number of tiers
+    address currency; //making sure it is approved
     uint256 maxMembers;
-    uint256 noOfTiers;
+    uint256 noOfTiers; //must equal tiers.length, must be more than 0, must be less than TIER_MAX, must be TIER_MAX IF DAO Type is sponsored
     //joined members check
 }
 
