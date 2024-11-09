@@ -130,6 +130,8 @@ contract MembershipFactory is AccessControl, NativeMetaTransaction {
         uint256 maxMembers = 0;
 
         // Preserve minted values and adjust the length of dao.tiers
+        //audit-issue the below assumes that the dao.tiers has the same order as tierconfig passed in. If the dao.tiers has (1,2,3) and the tierconfig provided is (5,4,1,2,3) then...
+        // 5 and 4 will be minted and 2 and 3 will be not minted. incorrect state. 
         for (uint256 i = 0; i < tierConfigs.length; i++) {
             if (i < dao.tiers.length) {
                 tierConfigs[i].minted = dao.tiers[i].minted;
@@ -174,6 +176,7 @@ contract MembershipFactory is AccessControl, NativeMetaTransaction {
     function upgradeTier(address daoMembershipAddress, uint256 fromTierIndex) external {
         require(daos[daoMembershipAddress].daoType == DAOType.SPONSORED, "Upgrade not allowed.");
         require(daos[daoMembershipAddress].noOfTiers >= fromTierIndex + 1, "No higher tier available.");
+        //audit-info @mody why does it burn 2 here
         IMembershipERC1155(daoMembershipAddress).burn(_msgSender(), fromTierIndex, 2);
         IMembershipERC1155(daoMembershipAddress).mint(_msgSender(), fromTierIndex - 1, 1);
         emit UserJoinedDAO(_msgSender(), daoMembershipAddress, fromTierIndex - 1);
