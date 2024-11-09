@@ -28,6 +28,8 @@ contract MembershipFactory is AccessControl, NativeMetaTransaction {
     event MembershipDAONFTCreated(string indexed ensName, address nftAddress, DAOConfig daoData);
     event UserJoinedDAO(address user, address membershipNftAddress, uint256 tierIndex);
 
+
+    //audit-info What is currecy Manager ? 
     /// @param _currencyManager The address of the CurrencyManager contract
     /// @param _baseURI Base URI for the NFT metadata
     /// @param _membershipImplementation The address of the MembershipERC1155 implementation contract
@@ -59,6 +61,7 @@ contract MembershipFactory is AccessControl, NativeMetaTransaction {
         require(daoConfig.noOfTiers > 0 && daoConfig.noOfTiers <= TIER_MAX, "Invalid tier count.");
         require(getENSAddress[daoConfig.ensname] == address(0), "DAO already exist.");
         if (daoConfig.daoType == DAOType.SPONSORED) {
+            //audit-info So sponsored DAO have neccesary 7 tiers ?  
             require(daoConfig.noOfTiers == TIER_MAX, "Invalid tier count for sponsored.");
         }
 
@@ -72,7 +75,14 @@ contract MembershipFactory is AccessControl, NativeMetaTransaction {
         TransparentUpgradeableProxy proxy = new TransparentUpgradeableProxy(
             membershipImplementation,
             address(proxyAdmin),
-            abi.encodeWithSignature("initialize(string,string,string,address,address)", daoConfig.ensname, "OWP", baseURI, _msgSender(), daoConfig.currency)
+            abi.encodeWithSignature(
+                "initialize(string,string,string,address,address)",
+                daoConfig.ensname, 
+                "OWP", 
+                baseURI, 
+                _msgSender(), 
+                daoConfig.currency
+            )
         );
 
         DAOConfig storage dao = daos[address(proxy)];
@@ -82,12 +92,14 @@ contract MembershipFactory is AccessControl, NativeMetaTransaction {
         dao.maxMembers = daoConfig.maxMembers;
         dao.noOfTiers = daoConfig.noOfTiers;
 
+        //audit-info @paul Looks weird to me 
         for (uint256 i = 0; i < tierConfigs.length; i++) {
             require(tierConfigs[i].minted == 0, "Invalid tier config");
             dao.tiers.push(tierConfigs[i]);
         }
 
         getENSAddress[daoConfig.ensname] = address(proxy);
+        
         userCreatedDAOs[_msgSender()][daoConfig.ensname] = address(proxy);
         emit MembershipDAONFTCreated(daoConfig.ensname, address(proxy), dao);
         return address(proxy);
@@ -97,8 +109,15 @@ contract MembershipFactory is AccessControl, NativeMetaTransaction {
     /// @param ensName The ENS name of the DAO
     /// @param tierConfigs The new tier configurations
     /// @return The address of the updated DAO
-    function updateDAOMembership(string calldata ensName, TierConfig[] memory tierConfigs)
-        external onlyRole(EXTERNAL_CALLER) returns (address) {
+    function updateDAOMembership(
+        string calldata ensName, 
+        TierConfig[] memory tierConfigs
+        ) 
+        external
+        onlyRole(EXTERNAL_CALLER)
+        returns (address)
+        {
+            
         address daoAddress = getENSAddress[ensName];
         require(tierConfigs.length <= TIER_MAX, "Invalid tier count.");
         require(tierConfigs.length > 0, "Invalid tier count.");
@@ -179,6 +198,9 @@ contract MembershipFactory is AccessControl, NativeMetaTransaction {
         return returndata;
     }
 
+
+
+    //audit-info Is that possible to DOS by calling this function from a function in this smart contract and set Enormous msg.data ? 
     function _msgSender()
         internal
         view

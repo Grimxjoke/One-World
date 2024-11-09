@@ -75,6 +75,7 @@ contract OWPIdentity is ERC1155, AccessControl, ERC1155Burnable, ERC1155Supply, 
         uint256[] memory ids,
         uint256[] memory amounts
     ) internal virtual override(ERC1155, ERC1155Supply){
+        //audit-issue from and to shoudn't be address 0
         require(from == address(0) || to == address(0), "OWPIdentity: NFT Not transferrable.");
         super._update(from, to, ids, amounts);
     }
