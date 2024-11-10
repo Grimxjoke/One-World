@@ -109,15 +109,11 @@ contract MembershipFactory is AccessControl, NativeMetaTransaction {
     /// @param ensName The ENS name of the DAO
     /// @param tierConfigs The new tier configurations
     /// @return The address of the updated DAO
-    function updateDAOMembership(
-        string calldata ensName, 
-        TierConfig[] memory tierConfigs
-        ) 
+    function updateDAOMembership(string calldata ensName,TierConfig[] memory tierConfigs) 
         external
         onlyRole(EXTERNAL_CALLER)
-        returns (address)
-        {
-            
+        returns (address) {
+
         address daoAddress = getENSAddress[ensName];
         require(tierConfigs.length <= TIER_MAX, "Invalid tier count.");
         require(tierConfigs.length > 0, "Invalid tier count.");
@@ -130,7 +126,7 @@ contract MembershipFactory is AccessControl, NativeMetaTransaction {
         uint256 maxMembers = 0;
 
         // Preserve minted values and adjust the length of dao.tiers
-        //audit-issue the below assumes that the dao.tiers has the same order as tierconfig passed in. If the dao.tiers has (1,2,3) and the tierconfig provided is (5,4,1,2,3) then...
+        //audit-issue @mody the below assumes that the dao.tiers has the same order as tierconfig passed in. If the dao.tiers has (1,2,3) and the tierconfig provided is (5,4,1,2,3) then...
         // 5 and 4 will be minted and 2 and 3 will be not minted. incorrect state. 
         for (uint256 i = 0; i < tierConfigs.length; i++) {
             if (i < dao.tiers.length) {
@@ -160,8 +156,13 @@ contract MembershipFactory is AccessControl, NativeMetaTransaction {
     /// @param tierIndex The index of the tier to join
     function joinDAO(address daoMembershipAddress, uint256 tierIndex) external {
         require(daos[daoMembershipAddress].noOfTiers > tierIndex, "Invalid tier.");
-        require(daos[daoMembershipAddress].tiers[tierIndex].amount > daos[daoMembershipAddress].tiers[tierIndex].minted, "Tier full.");
+        require(
+            daos[daoMembershipAddress].tiers[tierIndex].amount > daos[daoMembershipAddress].tiers[tierIndex].minted,
+            "Tier full."
+            );
         uint256 tierPrice = daos[daoMembershipAddress].tiers[tierIndex].price;
+
+        //audit-info @paul 20% Fees is Huge
         uint256 platformFees = (20 * tierPrice) / 100;
         daos[daoMembershipAddress].tiers[tierIndex].minted += 1;
         IERC20(daos[daoMembershipAddress].currency).transferFrom(_msgSender(), owpWallet, platformFees);
@@ -175,9 +176,15 @@ contract MembershipFactory is AccessControl, NativeMetaTransaction {
     /// @param fromTierIndex The current tier index of the user
     function upgradeTier(address daoMembershipAddress, uint256 fromTierIndex) external {
         require(daos[daoMembershipAddress].daoType == DAOType.SPONSORED, "Upgrade not allowed.");
+
+        //audit-info @paul SPONSORED Type Already have 7 Tiers by default
         require(daos[daoMembershipAddress].noOfTiers >= fromTierIndex + 1, "No higher tier available.");
+
         //audit-info @mody why does it burn 2 here
+        //audit-info @paul I think that having 2 NFT in the lower tier is equivalent of having 1 in a higher tier
         IMembershipERC1155(daoMembershipAddress).burn(_msgSender(), fromTierIndex, 2);
+
+        
         IMembershipERC1155(daoMembershipAddress).mint(_msgSender(), fromTierIndex - 1, 1);
         emit UserJoinedDAO(_msgSender(), daoMembershipAddress, fromTierIndex - 1);
     }
@@ -195,7 +202,12 @@ contract MembershipFactory is AccessControl, NativeMetaTransaction {
     /// @param contractAddress The address of the external contract
     /// @param data The calldata to be sent
     /// @return result The bytes result of the external call
-    function callExternalContract(address contractAddress, bytes memory data) external payable onlyRole(EXTERNAL_CALLER) returns (bytes memory ) {
+    function callExternalContract(address contractAddress, bytes memory data)
+        external
+        payable 
+        onlyRole(EXTERNAL_CALLER) 
+        returns (bytes memory ) {
+            
         (bool success, bytes memory returndata) = contractAddress.call{value: msg.value}(data);
         require(success, "External call failed");
         return returndata;

@@ -81,7 +81,8 @@ contract MembershipERC1155 is ERC1155Upgradeable, AccessControlUpgradeable, IMem
     /// @notice Burn all tokens of a single user
     /// @param from The address from which tokens will be burned
     function burnBatch(address from) public onlyRole(OWP_FACTORY_ROLE) {
-        //audit-info Why limited to 7 if burning all tokens ? 
+        //audit-info @paul Why limited to 7 if burning all tokens ? 
+        //audit-info @paul Because the max amount of Tier is 7
         for (uint256 i = 0; i < 7; ++i) {
             uint256 amount = balanceOf(from, i);
             if (amount > 0) {
@@ -171,7 +172,6 @@ contract MembershipERC1155 is ERC1155Upgradeable, AccessControlUpgradeable, IMem
     /// @notice Calculates the share of total profits for an account
     /// @param account The account to query
     /// @return The weighted share of the account
-    //audit-info WTF ? 
     function shareOf(address account) public view returns (uint256) {
         return (balanceOf(account, 0) * 64) +
                (balanceOf(account, 1) * 32) +
@@ -187,6 +187,7 @@ contract MembershipERC1155 is ERC1155Upgradeable, AccessControlUpgradeable, IMem
     /// @return profit The updated saved profit
     function saveProfit(address account) internal returns (uint256 profit) {
         uint256 unsaved = getUnsaved(account);
+        //audit-info Why profit of an account is set to total profit ? 
         lastProfit[account] = totalProfit;
         profit = savedProfit[account] + unsaved;
         savedProfit[account] = profit;
