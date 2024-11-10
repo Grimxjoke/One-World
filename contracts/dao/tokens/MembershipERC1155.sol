@@ -172,6 +172,12 @@ contract MembershipERC1155 is ERC1155Upgradeable, AccessControlUpgradeable, IMem
     /// @notice Calculates the share of total profits for an account
     /// @param account The account to query
     /// @return The weighted share of the account
+<<<<<<< HEAD
+=======
+    //audit-info WTF ? 
+    //@mody: they have tiers (1-7) this lowe the tier, the higher the share. they use this to calculate your fhare across all tiers combined. 
+    // super weird but thankful to chatgpt
+>>>>>>> c1bd9787ab1571f479f0b219626c8c973a3a2eab
     function shareOf(address account) public view returns (uint256) {
         return (balanceOf(account, 0) * 64) +
                (balanceOf(account, 1) * 32) +
