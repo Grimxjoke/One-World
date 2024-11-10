@@ -9,6 +9,12 @@ enum DAOType {
     SPONSORED
 }
 
+struct TierConfig {
+    uint256 amount;
+    uint256 price;
+    uint256 power;
+    uint256 minted;
+}
 
 struct DAOConfig {
     string ensname; //must return address 0 since it is new
@@ -28,9 +34,3 @@ struct DAOInputConfig {
     uint256 noOfTiers;
 }
 
-struct TierConfig {
-    uint256 amount;
-    uint256 price;
-    uint256 power;
-    uint256 minted;
-}

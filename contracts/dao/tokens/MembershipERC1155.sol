@@ -57,6 +57,7 @@ contract MembershipERC1155 is ERC1155Upgradeable, AccessControlUpgradeable, IMem
     /// @param to The address to mint tokens to
     /// @param tokenId The token ID to mint
     /// @param amount The amount of tokens to mint
+
     function mint(address to, uint256 tokenId, uint256 amount) external override onlyRole(OWP_FACTORY_ROLE) {
         totalSupply += amount * 2 ** (6 - tokenId); // Update total supply with weight
         _mint(to, tokenId, amount, "");
@@ -66,11 +67,13 @@ contract MembershipERC1155 is ERC1155Upgradeable, AccessControlUpgradeable, IMem
     /// @param from The address from which tokens will be burned
     /// @param tokenId The token ID to burn
     /// @param amount The amount of tokens to burn
+
     function burn(address from, uint256 tokenId, uint256 amount) external onlyRole(OWP_FACTORY_ROLE) {
         burn_(from, tokenId, amount);
     }
 
     function burn_(address from, uint256 tokenId, uint256 amount) internal {
+        //audit-info What's that weird totalSupply ? 
         totalSupply -= amount * 2 ** (6 - tokenId); // Update total supply with weight
         _burn(from, tokenId, amount);
     }
@@ -78,6 +81,7 @@ contract MembershipERC1155 is ERC1155Upgradeable, AccessControlUpgradeable, IMem
     /// @notice Burn all tokens of a single user
     /// @param from The address from which tokens will be burned
     function burnBatch(address from) public onlyRole(OWP_FACTORY_ROLE) {
+        //audit-info Why limited to 7 if burning all tokens ? 
         for (uint256 i = 0; i < 7; ++i) {
             uint256 amount = balanceOf(from, i);
             if (amount > 0) {
@@ -153,6 +157,7 @@ contract MembershipERC1155 is ERC1155Upgradeable, AccessControlUpgradeable, IMem
     /// @param account The account to query
     /// @return The total profit amount for the account
     function profitOf(address account) external view returns (uint256) {
+        //audit-info What's that getUnsaved? 
         return savedProfit[account] + getUnsaved(account);
     }
 
@@ -166,6 +171,7 @@ contract MembershipERC1155 is ERC1155Upgradeable, AccessControlUpgradeable, IMem
     /// @notice Calculates the share of total profits for an account
     /// @param account The account to query
     /// @return The weighted share of the account
+    //audit-info WTF ? 
     function shareOf(address account) public view returns (uint256) {
         return (balanceOf(account, 0) * 64) +
                (balanceOf(account, 1) * 32) +

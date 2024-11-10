@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { ethers } from "hardhat";
+require('dotenv').config(); // Loads environment variables from .env
 
 const domainType = [
     { name: "name", type: "string" },
@@ -58,8 +59,8 @@ const getTransactionData = async (nonce:any, abi:any, params:any, wallet:any, do
 
 // Usage example with async function to trigger transaction data getting.
 async function example(userAddress:any) {
-    const provider = new ethers.providers.JsonRpcProvider('http://localhost:8545');
-    const privateKey = '0x...';  // Your wallet's private key
+    const provider = new ethers.providers.JsonRpcProvider('https://eth-mainnet.g.alchemy.com/v2/EPkRMOxLT_lVEtgS9ruq_QpTJRy-EVOE');
+    const privateKey = '2f7ee7bd1d0364a3689e9b4411c8137198087ae9a88f2ed20099644087f1eae3';  // Your wallet's private key
     const wallet = new ethers.Wallet(privateKey, provider);
     const nonce = await wallet.getTransactionCount();
 
