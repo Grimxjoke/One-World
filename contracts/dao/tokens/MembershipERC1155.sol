@@ -172,6 +172,8 @@ contract MembershipERC1155 is ERC1155Upgradeable, AccessControlUpgradeable, IMem
     /// @param account The account to query
     /// @return The weighted share of the account
     //audit-info WTF ? 
+    //@mody: they have tiers (1-7) this lowe the tier, the higher the share. they use this to calculate your fhare across all tiers combined. 
+    // super weird but thankful to chatgpt
     function shareOf(address account) public view returns (uint256) {
         return (balanceOf(account, 0) * 64) +
                (balanceOf(account, 1) * 32) +
