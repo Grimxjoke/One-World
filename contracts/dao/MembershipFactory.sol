@@ -140,6 +140,8 @@ contract MembershipFactory is AccessControl, NativeMetaTransaction {
     /// @param daoMembershipAddress The address of the DAO membership NFT
     /// @param tierIndex The index of the tier to join
     function joinDAO(address daoMembershipAddress, uint256 tierIndex) external {
+        //audit-issue the below line seems to be backwards. the tier index would always be less than the no of tiers. 
+        // for example if the platform has 3 tiers. hten the tier index needs to be less than 3. 
         require(daos[daoMembershipAddress].noOfTiers > tierIndex, "Invalid tier.");
         require(daos[daoMembershipAddress].tiers[tierIndex].amount > daos[daoMembershipAddress].tiers[tierIndex].minted, "Tier full.");
         uint256 tierPrice = daos[daoMembershipAddress].tiers[tierIndex].price;
